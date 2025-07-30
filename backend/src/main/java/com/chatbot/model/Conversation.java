@@ -1,17 +1,11 @@
 package com.chatbot.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "conversations")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Conversation {
     
     @Id
@@ -38,6 +32,47 @@ public class Conversation {
     
     @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
+    
+    // Default constructor
+    public Conversation() {}
+    
+    // Constructor with all fields
+    public Conversation(Long id, Long customerId, String sessionId, String message,
+                      String response, String intent, BigDecimal confidence, LocalDateTime timestamp) {
+        this.id = id;
+        this.customerId = customerId;
+        this.sessionId = sessionId;
+        this.message = message;
+        this.response = response;
+        this.intent = intent;
+        this.confidence = confidence;
+        this.timestamp = timestamp;
+    }
+    
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public Long getCustomerId() { return customerId; }
+    public void setCustomerId(Long customerId) { this.customerId = customerId; }
+    
+    public String getSessionId() { return sessionId; }
+    public void setSessionId(String sessionId) { this.sessionId = sessionId; }
+    
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
+    
+    public String getResponse() { return response; }
+    public void setResponse(String response) { this.response = response; }
+    
+    public String getIntent() { return intent; }
+    public void setIntent(String intent) { this.intent = intent; }
+    
+    public BigDecimal getConfidence() { return confidence; }
+    public void setConfidence(BigDecimal confidence) { this.confidence = confidence; }
+    
+    public LocalDateTime getTimestamp() { return timestamp; }
+    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
     
     @PrePersist
     protected void onCreate() {
