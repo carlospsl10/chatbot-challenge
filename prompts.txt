@@ -38,3 +38,52 @@ create a md file named user-stories.md with 4-5 stories. Each story must include
 
 ############################################################################################################################
 
+#role 
+you are an expert fullstack software develop
+
+#objective
+Prepare the scaffolding for front end app (FE) and backend app (BE) projects taking into account the recommendations you gave me above (reactjs for FE, spring boot for BE). Consider the following recomentations: 
+
+- One folder for FE app and other folder for BE app
+- Generate directory layout, sample routes, and a basic README.md file
+
+Make a git commit with a short explanation specifying the initial scaffold
+
+##############
+change the following things from the backend application:
+- remove the AuthController class.
+- from OrderController class, remove the OrderService component and add a dummy data for each endpoint without using any external service.
+- do not forget to remove unnecesary imports
+- remove the LoginRequest and LoginResponse classes
+- create a .gitignore file with the unnecessary file extensions those the belong to target files and the ones you consider for both fe and be apps. 
+    - add .idea folder and extensions. use * to avoid repetitions
+ 
+
+##############
+I'm getting error compiling the backend app
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile (default-compile) on project order-status-chatbot: Fatal error compiling: java.lang.NoSuchFieldError: Class com.sun.tools.javac.tree.JCTree$JCImport does not have member field 'com.sun.tools.javac.tree.JCTree qualid' -> [Help 1]
+
+##############
+you are an expert software developer
+
+#objective
+use springdoc openapi dependency to documentate the endpoints created so far.
+The idea is to be able to visualize a swagger ui site with all endpoints 
+
+##############
+trying to install the frontend app, got this errors:
+Failed to compile.
+
+Module not found: Error: Can't resolve './App' in '/Users/carlosavendano/Documents/chatbot-challenge/frontend/src'
+ERROR in ./src/index.tsx 7:0-24
+Module not found: Error: Can't resolve './App' in '/Users/carlosavendano/Documents/chatbot-challenge/frontend/src'
+
+ERROR in ./src/index.tsx 8:0-48
+Module not found: Error: Can't resolve './reportWebVitals' in '/Users/carlosavendano/Documents/chatbot-challenge/frontend/src'
+
+##############
+from now on, consider to copy each prompt that I ask and add it to the @prompts.txt file at the end of the file taking into account the following:
+- if the prompt starts with #role, you have to add  ############################################################################################################################ 1 line before the new prompt and 1 line after the old prompt.
+- in case the prompt does not start with #role, use ############## instead.
+
+do this with the current prompt and make git add and git commit to the latest changes
