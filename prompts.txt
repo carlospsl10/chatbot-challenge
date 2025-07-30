@@ -1,0 +1,10 @@
+#role you are an expert software architecture
+
+#goal
+design an architecture to create a AI-powered chatbot for an Order Status Service (suppose it gets information from an ecommerce platform) and it needsto be able to interact with clients. The chatbot must be polite, mantain focus on delivering an excellent customer experience, and provide accurate, specific information about the chosen product.
+
+which strategies, programing languages, advices, do you recommend to create this software product.
+
+Do not provide any code, concentrate into the design, components and interactions
+
+Provide some diagram to see the flows if possible.
