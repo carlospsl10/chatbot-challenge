@@ -1,3 +1,4 @@
+############################################################################################################################
 #role you are an expert software architecture
 
 #goal
@@ -8,3 +9,32 @@ which strategies, programing languages, advices, do you recommend to create this
 Do not provide any code, concentrate into the design, components and interactions
 
 Provide some diagram to see the flows if possible.
+
+############################################################################################################################
+
+let's minimize the approach, the idea is to have a small MVP where anybody can see the interaction between a client and a chatbot. Follow these instructions:
+- just consider a web application and a back end application.
+- authentication and session management is required
+- do not consider an apigateway
+- only consider clients, orders, customers working with the chatbot
+- do not consider working with kubernetes (docker is ok) 
+- orders must already exist, the idea is to get information from them.
+- consider spring boot project with its dependencies. (do not generate any code so far)
+
+
+############################################################################################################################
+
+#role you are an expert business analyst
+
+#objective
+write clear, actionable user stories and map them to REST endpoints you just described above.
+
+create a md file named user-stories.md with 4-5 stories. Each story must include:
+- persona
+- story statement
+- benefit 
+- acceptance criteria
+- mapped endpoint (e.g, 'GET /orders/{id}')
+
+############################################################################################################################
+
