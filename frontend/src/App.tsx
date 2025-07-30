@@ -5,6 +5,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Login from './components/auth/Login';
 import Chat from './components/chat/Chat';
 import Layout from './components/layout/Layout';
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import { AuthProvider } from './contexts/AuthContext';
 import './App.css';
 
 const theme = createTheme({
@@ -22,19 +24,23 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
-        <div className="App">
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/chat" element={
-              <Layout>
-                <Chat />
-              </Layout>
-            } />
-            <Route path="/" element={<Login />} />
-          </Routes>
-        </div>
-      </Router>
+      <AuthProvider>
+        <Router>
+          <div className="App">
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/chat" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Chat />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/" element={<Login />} />
+            </Routes>
+          </div>
+        </Router>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

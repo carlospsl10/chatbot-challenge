@@ -87,3 +87,56 @@ from now on, consider to copy each prompt that I ask and add it to the @prompts.
 - in case the prompt does not start with #role, use ############## instead.
 
 do this with the current prompt and make git add and git commit to the latest changes
+
+############################################################################################################################
+
+#role
+you are an expert fullstack developer
+
+#objective
+consider the @user-stories.md file to work on story 1. 
+take the following considerations:
+- use spring security to allow customer authentication
+- the email and password are stored into the postgres database
+
+############################################################################################################################
+
+##############
+got the following error trying with a dummy customer 
+JDBC exception executing SQL [select c1_0.id,c1_0.address,c1_0.created_date,c1_0.email,c1_0.enabled,c1_0.first_name,c1_0.last_name,c1_0.password,c1_0.phone,c1_0.updated_date from customers c1_0 where c1_0.email=? and c1_0.enabled=?] [ERROR: column c1_0.enabled does not exist
+  Position: 58] [n/a]; SQL [n/a]
+
+##############
+check authenticateCustomer method in @backend/AuthService  amd consider to encode the loginRequest password before make the  passwordEncoder.matches condition. Now is never matching
+
+##############
+do not consider test controller in the main application
+
+##############
+ok, got it, but I'm testing using {
+  "email": "john.doe@example.com",
+  "password": "password123"
+} and it does not match
+
+##############
+note: I had to modify manually the encoded pwd in scripts and database to make it work.
+
+##############
+in @backend/ integrate all .sql files in only one. I just removed the chatbot database to let the application auto create and populate when it is starting up.
+
+##############
+#role
+you are an expert fullstack developer
+
+#objective
+consider the @user-stories.md file to work on story 1.
+connect the flow from @frontend/ to @backend/ to complete the authentication.
+validate that the user provides a correct email to make the log in operation
+
+##############
+the @frontend/ application is getting 200 from @backend/ when doing log in but it does not pass to the next page
+
+##############
+still not working I could see the @backend/ response is well, then once it navigates navigate('/chat'); the login page is loaded again
+
+##############
