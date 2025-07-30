@@ -1,36 +1,46 @@
 package com.chatbot.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "orders")
+@Schema(description = "Order entity representing customer orders")
 public class Order {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "Unique identifier for the order", example = "1")
     private Long id;
     
     @Column(name = "order_number", unique = true, nullable = false)
+    @Schema(description = "Unique order number", example = "ORD-001", required = true)
     private String orderNumber;
     
     @Column(name = "customer_id", nullable = false)
+    @Schema(description = "Customer ID associated with the order", example = "1", required = true)
     private Long customerId;
     
     @Column(name = "status", nullable = false)
+    @Schema(description = "Current status of the order", example = "SHIPPED", allowableValues = {"PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"}, required = true)
     private String status;
     
     @Column(name = "total_amount", precision = 10, scale = 2)
+    @Schema(description = "Total amount of the order", example = "299.99")
     private BigDecimal totalAmount;
     
     @Column(name = "shipping_address", columnDefinition = "TEXT")
+    @Schema(description = "Shipping address for the order", example = "123 Main St, New York, NY 10001")
     private String shippingAddress;
     
     @Column(name = "created_date", nullable = false)
+    @Schema(description = "Date when the order was created", example = "2024-01-15T10:30:00")
     private LocalDateTime createdDate;
     
     @Column(name = "updated_date")
+    @Schema(description = "Date when the order was last updated", example = "2024-01-19T14:45:00")
     private LocalDateTime updatedDate;
     
     // Default constructor
