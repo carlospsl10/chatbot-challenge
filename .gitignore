@@ -103,11 +103,7 @@ jspm_packages/
 .yarn-integrity
 
 # dotenv environment variable files
-.env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
+.env*
 
 # parcel-bundler cache
 .cache
@@ -172,7 +168,6 @@ public
 # NetBeans
 /nbproject/private/
 /nbbuild/
-/dist/
 /nbdist/
 /.nb-gradle/
 build/
@@ -184,8 +179,7 @@ build/
 *.code-workspace
 
 # Sublime Text
-*.sublime-project
-*.sublime-workspace
+*.sublime-*
 
 # Vim
 *.swp
@@ -226,8 +220,7 @@ Temporary Items
 .apdisk
 
 # Windows
-Thumbs.db
-Thumbs.db:encryptable
+Thumbs.db*
 ehthumbs.db
 ehthumbs_vista.db
 *.tmp
@@ -235,8 +228,7 @@ ehthumbs_vista.db
 Desktop.ini
 $RECYCLE.BIN/
 *.cab
-*.msi
-*.msix
+*.msi*
 *.msm
 *.msp
 *.lnk
@@ -252,26 +244,20 @@ $RECYCLE.BIN/
 # Docker
 # =========================
 .dockerignore
-Dockerfile
+Dockerfile*
 docker-compose.override.yml
 
 # =========================
 # Database
 # =========================
 *.db
-*.sqlite
-*.sqlite3
+*.sqlite*
 
 # =========================
 # Logs
 # =========================
 logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-lerna-debug.log*
-.pnpm-debug.log*
+*.log*
 
 # =========================
 # Temporary Files
@@ -293,11 +279,7 @@ target/
 # =========================
 # Environment Files
 # =========================
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env*
 
 # =========================
 # Testing
