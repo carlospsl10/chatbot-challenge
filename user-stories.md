@@ -114,19 +114,45 @@
 
 ---
 
+## Story 6: Customer Registration
+
+**Persona:** Alex, a new customer who wants to create an account
+
+**Story Statement:** As a new customer, I want to register for an account so that I can access the order status chatbot and manage my personal information securely.
+
+**Benefit:** New customers can create accounts to access personalized order services, track their orders, and maintain their order history in a secure environment.
+
+**Acceptance Criteria:**
+- Customer can access registration form from login page
+- Customer can enter required information (email, password, first name, last name)
+- System validates email format and ensures it's unique
+- System validates password strength (minimum 8 characters, complexity requirements)
+- System validates all required fields are provided
+- System encrypts password before storing in database
+- System creates customer account with default enabled status
+- System sends confirmation message upon successful registration
+- System automatically logs in customer after successful registration
+- System handles duplicate email addresses gracefully
+- System provides clear error messages for validation failures
+- System redirects to chat interface after successful registration
+
+**Mapped Endpoint:** `POST /api/auth/register`
+
+---
+
 ## Additional User Stories for Future Iterations
 
-### Story 6: Order Tracking Information
+### Story 7: Order Tracking Information
 **Persona:** Robert, a customer who wants detailed tracking information
 **Story Statement:** As a customer, I want to get detailed tracking information for my shipped orders so that I can know exactly where my package is and when it will arrive.
 **Mapped Endpoint:** `GET /api/orders/track/{orderNumber}`
 
-### Story 7: Customer Profile Management
+### Story 8: Customer Profile Management
 **Persona:** Amanda, a customer who wants to update her information
 **Story Statement:** As a customer, I want to view and update my profile information so that I can ensure my contact details are current for order communications.
 **Mapped Endpoint:** `GET /api/auth/me` and `PUT /api/customers/{id}`
 
-### Story 8: Conversation History
+### Story 9: Conversation History
 **Persona:** Tom, a customer who wants to review previous chat conversations
 **Story Statement:** As a customer, I want to view my previous chat conversations so that I can reference past interactions and order inquiries.
 **Mapped Endpoint:** `GET /api/chat/history`
@@ -137,6 +163,7 @@
 
 ### Phase 1 (Weeks 1-2): Foundation
 - **Story 1:** Customer Authentication
+- **Story 6:** Customer Registration
 - **Story 5:** Session Management and Logout
 
 ### Phase 2 (Weeks 3-4): Core Chatbot
@@ -148,7 +175,7 @@
 - Additional stories for tracking and profile management
 
 ### Phase 4 (Weeks 7-8): Polish and Testing
-- **Story 8:** Conversation History
+- **Story 9:** Conversation History
 - Performance optimization and comprehensive testing
 
 ## Success Metrics for User Stories
