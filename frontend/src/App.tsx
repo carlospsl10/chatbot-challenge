@@ -4,6 +4,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Login from './components/auth/Login';
 import Chat from './components/chat/Chat';
+import OrderHistory from './components/orders/OrderHistory';
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
@@ -33,6 +34,13 @@ function App() {
                 <ProtectedRoute>
                   <Layout>
                     <Chat />
+                  </Layout>
+                </ProtectedRoute>
+              } />
+              <Route path="/orders" element={
+                <ProtectedRoute>
+                  <Layout>
+                    <OrderHistory />
                   </Layout>
                 </ProtectedRoute>
               } />

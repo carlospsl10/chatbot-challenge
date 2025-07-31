@@ -1,6 +1,8 @@
 package com.chatbot.controller;
 
 import com.chatbot.model.Order;
+import com.chatbot.repository.OrderRepository;
+import com.chatbot.service.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -9,24 +11,31 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/orders")
 @Tag(name = "Order Management", description = "APIs for retrieving order information and tracking")
 public class OrderController {
 
+    @Autowired
+    private OrderRepository orderRepository;
+    
+    @Autowired
+    private JwtService jwtService;
+
     @GetMapping("/{orderNumber}")
     @Operation(
         summary = "Get Order by Number",
-        description = "Retrieves detailed information about a specific order using the order number"
+        description = "Retrieves detailed information about a specific order using the order number. Only returns orders belonging to the authenticated customer."
     )
     @ApiResponses(value = {
         @ApiResponse(
@@ -59,34 +68,46 @@ public class OrderController {
         @ApiResponse(
             responseCode = "404",
             description = "Order not found"
+        ),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden - Order does not belong to authenticated customer"
         )
     })
     public ResponseEntity<Order> getOrderByNumber(
         @Parameter(description = "Order number to retrieve", example = "ORD-001", required = true)
-        @PathVariable String orderNumber
+        @PathVariable String orderNumber,
+        @RequestHeader("Authorization") String authorization
     ) {
         try {
-            // Dummy data for order
-            Order order = new Order();
-            order.setId(1L);
-            order.setOrderNumber(orderNumber);
-            order.setCustomerId(1L);
-            order.setStatus("SHIPPED");
-            order.setTotalAmount(new BigDecimal("299.99"));
-            order.setShippingAddress("123 Main St, New York, NY 10001");
-            order.setCreatedDate(LocalDateTime.now().minusDays(5));
-            order.setUpdatedDate(LocalDateTime.now().minusDays(1));
+            // Extract customer ID from JWT token
+            String token = authorization.replace("Bearer ", "");
+            Long customerId = jwtService.extractCustomerId(token);
             
-            return ResponseEntity.ok(order);
+            // Find order by order number
+            Optional<Order> orderOpt = orderRepository.findByOrderNumber(orderNumber);
+            
+            if (orderOpt.isPresent()) {
+                Order order = orderOpt.get();
+                
+                // Security check: ensure order belongs to authenticated customer
+                if (!order.getCustomerId().equals(customerId)) {
+                    return ResponseEntity.status(403).build();
+                }
+                
+                return ResponseEntity.ok(order);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @GetMapping("/customer/{customerId}")
+    @GetMapping("/my-orders")
     @Operation(
-        summary = "Get Orders by Customer",
-        description = "Retrieves all orders for a specific customer"
+        summary = "Get My Orders",
+        description = "Retrieves all orders for the authenticated customer. Orders are returned in chronological order (most recent first)."
     )
     @ApiResponses(value = {
         @ApiResponse(
@@ -125,51 +146,118 @@ public class OrderController {
             )
         ),
         @ApiResponse(
-            responseCode = "400",
-            description = "Bad request - Invalid customer ID"
+            responseCode = "401",
+            description = "Unauthorized - Invalid or missing authentication token"
         ),
         @ApiResponse(
-            responseCode = "404",
-            description = "Customer not found"
+            responseCode = "400",
+            description = "Bad request - Invalid token format"
         )
     })
-    public ResponseEntity<List<Order>> getOrdersByCustomer(
-        @Parameter(description = "Customer ID to retrieve orders for", example = "1", required = true)
-        @PathVariable Long customerId
+    public ResponseEntity<List<Order>> getMyOrders(
+        @RequestHeader("Authorization") String authorization,
+        @Parameter(description = "Maximum number of orders to return (default: 10)", example = "10")
+        @RequestParam(defaultValue = "10") int limit
     ) {
         try {
-            // Dummy data for customer orders
-            Order order1 = new Order();
-            order1.setId(1L);
-            order1.setOrderNumber("ORD-001");
-            order1.setCustomerId(customerId);
-            order1.setStatus("DELIVERED");
-            order1.setTotalAmount(new BigDecimal("199.99"));
-            order1.setShippingAddress("123 Main St, New York, NY 10001");
-            order1.setCreatedDate(LocalDateTime.now().minusDays(10));
-            order1.setUpdatedDate(LocalDateTime.now().minusDays(8));
+            // Extract customer ID from JWT token
+            String token = authorization.replace("Bearer ", "");
+            Long customerId = jwtService.extractCustomerId(token);
+            
+            // Get customer orders from database
+            List<Order> orders = orderRepository.findByCustomerId(customerId);
+            
+            // Sort by created date (most recent first) and limit results
+            orders.sort((o1, o2) -> o2.getCreatedDate().compareTo(o1.getCreatedDate()));
+            
+            if (orders.size() > limit) {
+                orders = orders.subList(0, limit);
+            }
+            
+            return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
-            Order order2 = new Order();
-            order2.setId(2L);
-            order2.setOrderNumber("ORD-002");
-            order2.setCustomerId(customerId);
-            order2.setStatus("SHIPPED");
-            order2.setTotalAmount(new BigDecimal("149.50"));
-            order2.setShippingAddress("456 Oak Ave, Los Angeles, CA 90210");
-            order2.setCreatedDate(LocalDateTime.now().minusDays(3));
-            order2.setUpdatedDate(LocalDateTime.now().minusDays(1));
+    @GetMapping("/my-orders/recent")
+    @Operation(
+        summary = "Get My Recent Orders",
+        description = "Retrieves recent orders (last 30 days) for the authenticated customer."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Recent orders retrieved successfully",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = Order.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized - Invalid or missing authentication token"
+        )
+    })
+    public ResponseEntity<List<Order>> getMyRecentOrders(
+        @RequestHeader("Authorization") String authorization
+    ) {
+        try {
+            // Extract customer ID from JWT token
+            String token = authorization.replace("Bearer ", "");
+            Long customerId = jwtService.extractCustomerId(token);
+            
+            // Get recent orders from database
+            List<Order> recentOrders = orderRepository.findRecentOrdersByCustomerId(customerId);
+            
+            return ResponseEntity.ok(recentOrders);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 
-            Order order3 = new Order();
-            order3.setId(3L);
-            order3.setOrderNumber("ORD-003");
-            order3.setCustomerId(customerId);
-            order3.setStatus("PROCESSING");
-            order3.setTotalAmount(new BigDecimal("89.99"));
-            order3.setShippingAddress("789 Pine St, Chicago, IL 60601");
-            order3.setCreatedDate(LocalDateTime.now().minusDays(1));
-            order3.setUpdatedDate(LocalDateTime.now());
-
-            List<Order> orders = Arrays.asList(order1, order2, order3);
+    @GetMapping("/my-orders/status/{status}")
+    @Operation(
+        summary = "Get My Orders by Status",
+        description = "Retrieves orders with specific status for the authenticated customer."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Orders retrieved successfully",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = Order.class)
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized - Invalid or missing authentication token"
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad request - Invalid status"
+        )
+    })
+    public ResponseEntity<List<Order>> getMyOrdersByStatus(
+        @RequestHeader("Authorization") String authorization,
+        @Parameter(description = "Order status to filter by", example = "SHIPPED", required = true)
+        @PathVariable String status
+    ) {
+        try {
+            // Extract customer ID from JWT token
+            String token = authorization.replace("Bearer ", "");
+            Long customerId = jwtService.extractCustomerId(token);
+            
+            // Validate status
+            String validStatus = status.toUpperCase();
+            if (!isValidStatus(validStatus)) {
+                return ResponseEntity.badRequest().build();
+            }
+            
+            // Get orders by status from database
+            List<Order> orders = orderRepository.findByCustomerIdAndStatus(customerId, validStatus);
+            
             return ResponseEntity.ok(orders);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -179,7 +267,7 @@ public class OrderController {
     @GetMapping("/track/{orderNumber}")
     @Operation(
         summary = "Get Order Tracking Information",
-        description = "Retrieves real-time tracking information for a specific order"
+        description = "Retrieves real-time tracking information for a specific order. Only accessible for orders belonging to the authenticated customer."
     )
     @ApiResponses(value = {
         @ApiResponse(
@@ -212,28 +300,63 @@ public class OrderController {
         @ApiResponse(
             responseCode = "404",
             description = "Order tracking not found"
+        ),
+        @ApiResponse(
+            responseCode = "403",
+            description = "Forbidden - Order does not belong to authenticated customer"
         )
     })
     public ResponseEntity<Map<String, Object>> getOrderTracking(
         @Parameter(description = "Order number to track", example = "ORD-001", required = true)
-        @PathVariable String orderNumber
+        @PathVariable String orderNumber,
+        @RequestHeader("Authorization") String authorization
     ) {
         try {
-            // Dummy tracking data
-            Map<String, Object> trackingInfo = Map.of(
-                "orderNumber", orderNumber,
-                "status", "IN_TRANSIT",
-                "estimatedDelivery", LocalDateTime.now().plusDays(2).toString(),
-                "currentLocation", "Distribution Center - Memphis, TN",
-                "trackingNumber", "1Z999AA1234567890",
-                "carrier", "FedEx",
-                "lastUpdate", LocalDateTime.now().minusHours(6).toString(),
-                "message", "Package is in transit to final destination"
-            );
+            // Extract customer ID from JWT token
+            String token = authorization.replace("Bearer ", "");
+            Long customerId = jwtService.extractCustomerId(token);
             
-            return ResponseEntity.ok(trackingInfo);
+            // Find order and verify ownership
+            Optional<Order> orderOpt = orderRepository.findByOrderNumber(orderNumber);
+            
+            if (orderOpt.isPresent()) {
+                Order order = orderOpt.get();
+                
+                // Security check: ensure order belongs to authenticated customer
+                if (!order.getCustomerId().equals(customerId)) {
+                    return ResponseEntity.status(403).build();
+                }
+                
+                // Dummy tracking data (in real implementation, this would come from tracking service)
+                Map<String, Object> trackingInfo = Map.of(
+                    "orderNumber", orderNumber,
+                    "status", order.getStatus(),
+                    "estimatedDelivery", LocalDateTime.now().plusDays(2).toString(),
+                    "currentLocation", "Distribution Center - Memphis, TN",
+                    "trackingNumber", "1Z999AA1234567890",
+                    "carrier", "FedEx",
+                    "lastUpdate", LocalDateTime.now().minusHours(6).toString(),
+                    "message", "Package is in transit to final destination"
+                );
+                
+                return ResponseEntity.ok(trackingInfo);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+    
+    /**
+     * Validate order status
+     * @param status Status to validate
+     * @return true if valid, false otherwise
+     */
+    private boolean isValidStatus(String status) {
+        return status.equals("PROCESSING") || 
+               status.equals("SHIPPED") || 
+               status.equals("DELIVERED") || 
+               status.equals("CANCELLED");
     }
 } 

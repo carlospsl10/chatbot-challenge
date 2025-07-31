@@ -182,3 +182,43 @@ take the following considerations in @backend/
 @backend/ should be ready to use RAG to retrieve order status information
 
 ##############
+found the following issues:
+- review this pgvector-java artifact id that is not found. consider using the one here @https://mvnrepository.com/artifact/com.pgvector/pgvector/0.1.6
+- RagService in @backend/ app is not compiling
+
+##############
+I have this issue in postgres database, when hitting CREATE EXTENSION IF NOT EXISTS vector; SQL Error [58P01]: ERROR: could not open extension control file "/usr/share/postgresql/13/extension/vector.control": No such file or directory
+
+##############
+i prefer option 1
+
+##############
+got this error in @backend/ : ERROR: column "embedding" is of type vector but expression is of type bytea
+
+##############
+now I see this error: ERROR: column "embedding" is of type vector but expression is of type character varying
+
+##############
+I see in @backend/ ragservice class, retrievalRelevantDocuments method this exception at runtime java.lang.ClassCastException: class org.postgresql.util.PGobject cannot be cast to class java.time.LocalDateTime (org.postgresql.util.PGobject is in unnamed module of loader 'app'; java.time.LocalDateTime is in module java.base of loader 'bootstrap')
+
+##############
+the app seems to be working fine but why if I provide the order id stored into the database, the flow does not retrieve me information of the order?
+
+##############
+make git add and git commit with some comments and push it to main branch
+
+##############
+############################################################################################################################
+
+#role 
+you are an expert fullstack developer
+
+#objective 
+consider the @user-stories.md file to work on story 4
+
+take in account the following considerations in @backend/ 
+- check whether the user requires to send the customer id or it can be taken from the authenticated user. Apply the better solution for you.
+- customers can not see other customer's order status
+- @frontend/ app should be able to see customer order history
+
+############################################################################################################################
