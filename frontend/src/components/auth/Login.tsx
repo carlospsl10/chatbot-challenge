@@ -9,7 +9,8 @@ import {
   Container,
   Alert,
   CircularProgress,
-  InputAdornment
+  InputAdornment,
+  Link
 } from '@mui/material';
 import { Email, Lock, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
@@ -234,6 +235,13 @@ const Login: React.FC = () => {
               Email: john.doe@example.com<br />
               Password: password123
             </Typography>
+          </Box>
+
+          {/* Registration link */}
+          <Box textAlign="center" sx={{ mt: 2 }}>
+            <Link href="/register" variant="body2">
+              Don't have an account? Sign up
+            </Link>
           </Box>
         </Paper>
       </Box>

@@ -16,6 +16,7 @@
 /Users/carlosavendano/Documents/chatbot-challenge/backend/src/main/java/com/chatbot/repository/CustomerRepository.java
 /Users/carlosavendano/Documents/chatbot-challenge/backend/src/main/java/com/chatbot/dto/ChatRequest.java
 /Users/carlosavendano/Documents/chatbot-challenge/backend/src/main/java/com/chatbot/config/OpenApiConfig.java
+/Users/carlosavendano/Documents/chatbot-challenge/backend/src/main/java/com/chatbot/dto/RegisterRequest.java
 /Users/carlosavendano/Documents/chatbot-challenge/backend/src/main/java/com/chatbot/security/CustomUserDetailsService.java
 /Users/carlosavendano/Documents/chatbot-challenge/backend/src/main/java/com/chatbot/model/Order.java
 /Users/carlosavendano/Documents/chatbot-challenge/backend/src/main/java/com/chatbot/model/Customer.java

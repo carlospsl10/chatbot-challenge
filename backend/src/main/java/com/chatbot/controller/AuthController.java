@@ -2,6 +2,7 @@ package com.chatbot.controller;
 
 import com.chatbot.dto.LoginRequest;
 import com.chatbot.dto.LoginResponse;
+import com.chatbot.dto.RegisterRequest;
 import com.chatbot.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,6 +27,76 @@ public class AuthController {
     
     @Autowired
     private AuthService authService;
+    
+    @PostMapping("/register")
+    @Operation(
+        summary = "Customer Registration",
+        description = "Register a new customer account with email, password, and personal information"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "201",
+            description = "Registration successful",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = LoginResponse.class),
+                examples = @ExampleObject(
+                    name = "Successful Registration",
+                    value = """
+                    {
+                      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                      "tokenType": "Bearer",
+                      "customerId": 1,
+                      "email": "john.doe@example.com",
+                      "firstName": "John",
+                      "lastName": "Doe",
+                      "expiresIn": 86400000
+                    }
+                    """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Bad request - Validation error or duplicate email",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = Map.class),
+                examples = @ExampleObject(
+                    name = "Validation Error",
+                    value = """
+                    {
+                      "error": "Email already exists",
+                      "timestamp": "2024-01-20T10:30:00",
+                      "status": 400
+                    }
+                    """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "422",
+            description = "Unprocessable Entity - Invalid input data"
+        )
+    })
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest registerRequest) {
+        try {
+            LoginResponse response = authService.registerCustomer(registerRequest);
+            return ResponseEntity.status(201).body(response);
+        } catch (IllegalArgumentException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            errorResponse.put("timestamp", java.time.LocalDateTime.now().toString());
+            errorResponse.put("status", 400);
+            return ResponseEntity.badRequest().body(errorResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Registration failed");
+            errorResponse.put("timestamp", java.time.LocalDateTime.now().toString());
+            errorResponse.put("status", 400);
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+    }
     
     @PostMapping("/login")
     @Operation(

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Login from './components/auth/Login';
+import Register from './components/auth/Register';
 import Chat from './components/chat/Chat';
 import OrderHistory from './components/orders/OrderHistory';
 import Layout from './components/layout/Layout';
@@ -30,6 +31,7 @@ function App() {
           <div className="App">
             <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
               <Route path="/chat" element={
                 <ProtectedRoute>
                   <Layout>

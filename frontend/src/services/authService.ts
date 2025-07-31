@@ -7,6 +7,13 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+}
+
 export interface LoginResponse {
   token: string;
   tokenType: string;
@@ -31,6 +38,31 @@ class AuthService {
   constructor() {
     axios.defaults.baseURL = API_BASE_URL;
     axios.defaults.headers.common['Content-Type'] = 'application/json';
+  }
+
+  /**
+   * Register a new customer
+   */
+  async register(email: string, password: string, firstName: string, lastName: string): Promise<LoginResponse> {
+    try {
+      const response = await axios.post<LoginResponse>('/api/auth/register', {
+        email,
+        password,
+        firstName,
+        lastName
+      });
+
+      // Store token and user info
+      this.setToken(response.data.token);
+      this.setUser(response.data);
+
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.data) {
+        throw new Error(error.response.data.error || 'Registration failed');
+      }
+      throw new Error('Network error. Please check your connection.');
+    }
   }
 
   /**

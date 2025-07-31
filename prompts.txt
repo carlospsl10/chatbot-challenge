@@ -241,3 +241,40 @@ take into account the following considerations
 - applies logout on both and apps.
 
 ############################################################################################################################
+
+##############
+make git add and git commit with some comments and git push to main branch
+
+##############
+############################################################################################################################
+
+#role  
+you are an expert business analyst
+
+#objective 
+add a new user story into @user-stories.md file to allow customer registration
+
+consider the following:
+- the new user story must follow the structure of the existing created user stories 
+- add it before Additional User Stories for Future Iterations
+- just modify the @user-stories.md file
+
+############################################################################################################################
+
+##############
+make git add and git commit with some comments and git push to main branch
+
+##############
+############################################################################################################################
+
+#role  
+you are an expert fullstack developer 
+
+#objective 
+consider the @user-stories.md file to work on story 6
+
+take into account the following considerations:
+- in @backend/ application every time a customer is created, also create some dummy orders (i.e. 3 orders is ok) in the same flow and assign them to the new created customer.
+- in @frontend/ feel free to create a proper form for customer creation and connect it to the @backend/ app. Take into account the specified validations written in the acceptance criteria.
+
+############################################################################################################################
