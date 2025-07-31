@@ -1,0 +1,12 @@
+{
+  "id": "api-get-customer-orders",
+  "title": "Get Customer Orders API",
+  "content": "The GET /api/orders/customer/{customerId} endpoint retrieves all orders for a specific customer. The endpoint accepts a customer ID as a path parameter and returns a list of orders with their details. Response includes an array of order objects, each containing: order ID, order number, customer ID, status, total amount, shipping address, created date, and updated date. The endpoint requires authentication via JWT token in the Authorization header. Orders are returned in chronological order with the most recent first. If the customer has no orders, an empty array is returned. If the customer ID is invalid or not found, a 404 status code is returned. Example successful response: [{ 'id': 1, 'orderNumber': 'ORD-001', 'customerId': 1, 'status': 'DELIVERED', 'totalAmount': 199.99, 'shippingAddress': '123 Main St, New York, NY 10001', 'createdDate': '2024-01-10T09:15:00', 'updatedDate': '2024-01-12T16:30:00' }, { 'id': 2, 'orderNumber': 'ORD-002', 'customerId': 1, 'status': 'SHIPPED', 'totalAmount': 149.50, 'shippingAddress': '456 Oak Ave, Los Angeles, CA 90210', 'createdDate': '2024-01-15T14:20:00', 'updatedDate': '2024-01-19T13:45:00' }]. Example error response: { 'error': 'Customer not found', 'timestamp': '2024-01-20T10:30:00', 'status': 404 }.",
+  "category": "api-documentation",
+  "tags": ["api", "customer-orders", "endpoint", "rest", "get-customer-orders"],
+  "metadata": {
+    "created": "2024-01-20T10:00:00Z",
+    "updated": "2024-01-20T10:00:00Z",
+    "version": "1.0"
+  }
+} 

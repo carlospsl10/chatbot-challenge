@@ -1,0 +1,12 @@
+{
+  "id": "api-track-order",
+  "title": "Track Order API",
+  "content": "The GET /api/orders/track/{orderNumber} endpoint retrieves real-time tracking information for a specific order. The endpoint accepts an order number as a path parameter and returns detailed tracking information including current status, estimated delivery date, current location, tracking number, carrier information, and last update timestamp. Response includes: order number, current status, estimated delivery date, current location, tracking number, carrier name, last update timestamp, and status message. The endpoint requires authentication via JWT token in the Authorization header. If the order is not found or tracking information is unavailable, a 404 status code is returned. Example successful response: { 'orderNumber': 'ORD-001', 'status': 'IN_TRANSIT', 'estimatedDelivery': '2024-01-22T14:30:00', 'currentLocation': 'Distribution Center - Memphis, TN', 'trackingNumber': '1Z999AA1234567890', 'carrier': 'FedEx', 'lastUpdate': '2024-01-20T08:15:00', 'message': 'Package is in transit to final destination' }. Example error response: { 'error': 'Order tracking not found', 'timestamp': '2024-01-20T10:30:00', 'status': 404 }.",
+  "category": "api-documentation",
+  "tags": ["api", "tracking", "endpoint", "rest", "track-order"],
+  "metadata": {
+    "created": "2024-01-20T10:00:00Z",
+    "updated": "2024-01-20T10:00:00Z",
+    "version": "1.0"
+  }
+} 

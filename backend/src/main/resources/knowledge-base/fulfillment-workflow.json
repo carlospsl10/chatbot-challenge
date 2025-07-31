@@ -1,0 +1,12 @@
+{
+  "id": "fulfillment-workflow",
+  "title": "Fulfillment Workflow",
+  "content": "The fulfillment workflow consists of several stages: Order Receipt, Payment Processing, Inventory Allocation, Picking and Packing, Shipping, and Delivery. Order Receipt occurs when a customer places an order through the website or mobile app. Payment Processing involves verifying payment and authorizing the transaction, which typically takes 1-2 business days. Inventory Allocation ensures the ordered items are available and reserved for the customer. Picking and Packing involves warehouse staff selecting the items and preparing them for shipment with proper packaging and labeling. Shipping includes generating shipping labels, coordinating with carriers, and tracking the package. Delivery is the final stage where the package reaches the customer. The entire fulfillment process typically takes 7-14 business days for standard shipping, with expedited options available for faster delivery. Quality control checks are performed at each stage to ensure customer satisfaction.",
+  "category": "fulfillment",
+  "tags": ["fulfillment", "warehouse", "shipping", "delivery", "process"],
+  "metadata": {
+    "created": "2024-01-20T10:00:00Z",
+    "updated": "2024-01-20T10:00:00Z",
+    "version": "1.0"
+  }
+} 

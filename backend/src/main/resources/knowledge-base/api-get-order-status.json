@@ -1,0 +1,12 @@
+{
+  "id": "api-get-order-status",
+  "title": "Get Order Status API",
+  "content": "The GET /api/orders/{orderNumber} endpoint retrieves detailed information about a specific order. The endpoint accepts an order number as a path parameter and returns order details including status, customer information, shipping address, total amount, and timestamps. Response includes: order ID, order number, customer ID, current status (PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED, REFUNDED), total amount, shipping address, created date, and updated date. If the order is not found, the API returns a 404 status code with an appropriate error message. The endpoint requires authentication via JWT token in the Authorization header. Example successful response: { 'id': 1, 'orderNumber': 'ORD-001', 'customerId': 1, 'status': 'SHIPPED', 'totalAmount': 299.99, 'shippingAddress': '123 Main St, New York, NY 10001', 'createdDate': '2024-01-15T10:30:00', 'updatedDate': '2024-01-19T14:45:00' }. Example error response: { 'error': 'Order not found', 'timestamp': '2024-01-20T10:30:00', 'status': 404 }.",
+  "category": "api-documentation",
+  "tags": ["api", "order-status", "endpoint", "rest", "get-order"],
+  "metadata": {
+    "created": "2024-01-20T10:00:00Z",
+    "updated": "2024-01-20T10:00:00Z",
+    "version": "1.0"
+  }
+} 

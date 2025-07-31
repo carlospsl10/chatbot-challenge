@@ -1,0 +1,12 @@
+{
+  "id": "status-transitions",
+  "title": "Order Status Transitions",
+  "content": "Order status transitions follow a specific flow: PENDING → PROCESSING → SHIPPED → DELIVERED. PENDING status occurs when an order is first placed and payment is being processed. This typically takes 1-2 business days. PROCESSING status indicates the order has been confirmed and is being prepared for shipment, including inventory allocation and packaging. This usually takes 2-3 business days. SHIPPED status means the order has been dispatched and is in transit to the customer. Delivery time depends on shipping method: standard (5-7 business days), express (2-3 business days), or overnight (1 business day). DELIVERED status confirms the order has been received by the customer. Additional statuses include CANCELLED (order cancelled before shipment) and REFUNDED (order returned and refund processed). Customers can track their order status through their account or by contacting customer service.",
+  "category": "order-management",
+  "tags": ["status-transitions", "fulfillment-process", "delivery-timeline", "tracking"],
+  "metadata": {
+    "created": "2024-01-20T10:00:00Z",
+    "updated": "2024-01-20T10:00:00Z",
+    "version": "1.0"
+  }
+} 

@@ -164,3 +164,21 @@ take the following considerations in @frontend/ app:
 - ensure the service is calling  the new endpoint and provide the require information
 
 ##############
+#role  
+you are an expert fullstack developer
+
+#objective 
+consider the @user-stories.md file to work on story 3
+RAG (Knowledge Base Retrieval) has to be implemented in this point
+
+take the following considerations in @backend/ 
+- Create docs (JSON or YAML format) as knowledge base.
+  - consider docs such as order-status-overview, status-transitions, fulfillment-workflow and others you consider to enrich the application.
+  - also consider API-style docs (i.e. get-order-status) that describes the get endpoint to get order status including the response (not found orders as well). Add the ones you consider.  
+- Use pgvector from postgres database to index the knowledge
+- implement retrieval context to the LLM prompt
+
+#deliverable
+@backend/ should be ready to use RAG to retrieve order status information
+
+##############

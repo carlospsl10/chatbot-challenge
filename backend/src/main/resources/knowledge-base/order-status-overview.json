@@ -1,0 +1,12 @@
+{
+  "id": "order-status-overview",
+  "title": "Order Status Overview",
+  "content": "Order status represents the current state of a customer's order in the fulfillment process. Each order goes through a series of status transitions from creation to delivery. Understanding order statuses helps customers track their purchases and know when to expect their items. The main order statuses include: PENDING (order received, payment processing), PROCESSING (order confirmed, being prepared), SHIPPED (order dispatched, in transit), DELIVERED (order received by customer), CANCELLED (order cancelled), and REFUNDED (order returned and refunded). Each status has specific implications for delivery timeframes and customer expectations.",
+  "category": "order-management",
+  "tags": ["order-status", "fulfillment", "tracking", "customer-service"],
+  "metadata": {
+    "created": "2024-01-20T10:00:00Z",
+    "updated": "2024-01-20T10:00:00Z",
+    "version": "1.0"
+  }
+} 

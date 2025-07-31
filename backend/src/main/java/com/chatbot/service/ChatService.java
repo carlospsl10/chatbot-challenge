@@ -3,8 +3,10 @@ package com.chatbot.service;
 import com.chatbot.dto.ChatResponse;
 import com.chatbot.model.Conversation;
 import com.chatbot.model.Customer;
+import com.chatbot.model.Order;
 import com.chatbot.repository.ConversationRepository;
 import com.chatbot.repository.CustomerRepository;
+import com.chatbot.repository.OrderRepository;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
 import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.service.OpenAiService;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -33,6 +36,12 @@ public class ChatService {
     @Autowired
     private CustomerRepository customerRepository;
     
+    @Autowired
+    private OrderRepository orderRepository;
+    
+    @Autowired
+    private RagService ragService;
+    
     @Value("${openai.model:gpt-3.5-turbo}")
     private String model;
     
@@ -43,7 +52,7 @@ public class ChatService {
     private Double temperature;
     
     /**
-     * Process customer message and generate AI response
+     * Process customer message and generate AI response with RAG
      * @param message Customer message
      * @param customerEmail Customer email for context
      * @return ChatResponse with AI-generated reply
@@ -52,8 +61,21 @@ public class ChatService {
         try {
             logger.info("Processing message for customer: {}", customerEmail);
             
-            // Create system prompt for chatbot persona
-            String systemPrompt = createSystemPrompt();
+            // Get customer ID
+            Long customerId = getCustomerIdFromEmail(customerEmail);
+            
+            // Retrieve relevant knowledge base documents
+            List<com.chatbot.model.KnowledgeBase> relevantDocs = ragService.retrieveRelevantDocuments(message, 3);
+            String knowledgeContext = ragService.buildContext(relevantDocs);
+            
+            // Retrieve actual order data based on message content
+            String orderContext = retrieveOrderContext(message, customerId);
+            
+            // Combine knowledge base and order data context
+            String combinedContext = knowledgeContext + "\n\n" + orderContext;
+            
+            // Create system prompt with combined context
+            String systemPrompt = createSystemPromptWithRAG(combinedContext);
             
             // Create user message
             ChatMessage userMessage = new ChatMessage("user", message);
@@ -83,7 +105,7 @@ public class ChatService {
             // Save conversation to database
             saveConversation(customerEmail, message, aiResponse, intent, confidence);
             
-            logger.info("Successfully processed message. Intent: {}, Confidence: {}", intent, confidence);
+            logger.info("Successfully processed message with RAG and order data. Intent: {}, Confidence: {}", intent, confidence);
             
             return response;
             
@@ -100,7 +122,51 @@ public class ChatService {
     }
     
     /**
-     * Create system prompt for chatbot persona
+     * Create system prompt with RAG context for order status service
+     * @param context Combined knowledge base and order data context
+     * @return System prompt string
+     */
+    private String createSystemPromptWithRAG(String context) {
+        return """
+            You are a helpful and polite customer service AI assistant for an online order status service. 
+            Your role is to help customers with their order-related inquiries.
+            
+            Key guidelines:
+            1. Always be polite, professional, and customer-focused
+            2. Help customers check order status, order history, and tracking information
+            3. Ask for order numbers when needed to provide specific information
+            4. Provide clear, concise, and helpful responses
+            5. If you don't have specific order information, guide customers to provide their order number
+            6. Be empathetic and understanding of customer concerns
+            7. Keep responses conversational but professional
+            8. If you can't help with a specific request, politely redirect to human support
+            9. Use the provided knowledge base information to give accurate and detailed responses
+            10. When order data is available, provide specific details about order status, amounts, and dates
+            11. If an order is not found, politely inform the customer and ask them to verify the order number
+            
+            Common customer inquiries you can help with:
+            - Order status checks (provide specific order number like ORD-001)
+            - Order history requests
+            - Tracking information
+            - General order-related questions
+            
+            Available order statuses:
+            - PROCESSING: Order is being prepared
+            - SHIPPED: Order has been shipped
+            - DELIVERED: Order has been delivered
+            - CANCELLED: Order has been cancelled
+            
+            Knowledge Base Context and Order Data:
+            %s
+            
+            Remember: You're here to make the customer experience smooth and helpful! 
+            Use the knowledge base information and order data to provide accurate and helpful responses.
+            If specific order information is provided, use it to give detailed, personalized responses.
+            """.formatted(context);
+    }
+    
+    /**
+     * Create system prompt for chatbot persona (fallback)
      * @return System prompt string
      */
     private String createSystemPrompt() {
@@ -231,5 +297,122 @@ public class ChatService {
             // Return default customer ID as fallback
             return 1L;
         }
+    }
+    
+    /**
+     * Retrieve order context based on message content
+     * @param message Customer message
+     * @param customerId Customer ID
+     * @return Order context string
+     */
+    private String retrieveOrderContext(String message, Long customerId) {
+        StringBuilder context = new StringBuilder();
+        String lowerMessage = message.toLowerCase();
+        
+        try {
+            // Check if message contains specific order number
+            String orderNumber = extractOrderNumber(message);
+            if (orderNumber != null) {
+                Optional<Order> order = orderRepository.findByOrderNumber(orderNumber);
+                if (order.isPresent()) {
+                    Order o = order.get();
+                    context.append("SPECIFIC ORDER INFORMATION:\n");
+                    context.append(String.format("- Order Number: %s\n", o.getOrderNumber()));
+                    context.append(String.format("- Status: %s\n", o.getStatus()));
+                    context.append(String.format("- Total Amount: $%.2f\n", o.getTotalAmount()));
+                    context.append(String.format("- Shipping Address: %s\n", o.getShippingAddress()));
+                    context.append(String.format("- Created Date: %s\n", o.getCreatedDate()));
+                    if (o.getUpdatedDate() != null) {
+                        context.append(String.format("- Last Updated: %s\n", o.getUpdatedDate()));
+                    }
+                    context.append("\n");
+                } else {
+                    context.append("ORDER NOT FOUND: The order number '").append(orderNumber).append("' was not found in our system.\n\n");
+                }
+            }
+            
+            // If asking for order history or all orders
+            if (lowerMessage.contains("order") && (lowerMessage.contains("history") || lowerMessage.contains("all") || lowerMessage.contains("my orders"))) {
+                List<Order> customerOrders = orderRepository.findByCustomerId(customerId);
+                if (!customerOrders.isEmpty()) {
+                    context.append("CUSTOMER ORDER HISTORY:\n");
+                    for (Order o : customerOrders) {
+                        context.append(String.format("- Order %s: %s, $%.2f, %s\n", 
+                            o.getOrderNumber(), o.getStatus(), o.getTotalAmount(), o.getCreatedDate()));
+                    }
+                    context.append("\n");
+                } else {
+                    context.append("ORDER HISTORY: No orders found for this customer.\n\n");
+                }
+            }
+            
+            // If asking for recent orders
+            if (lowerMessage.contains("recent") || lowerMessage.contains("latest")) {
+                List<Order> recentOrders = orderRepository.findRecentOrdersByCustomerId(customerId);
+                if (!recentOrders.isEmpty()) {
+                    context.append("RECENT ORDERS (Last 30 days):\n");
+                    for (Order o : recentOrders) {
+                        context.append(String.format("- Order %s: %s, $%.2f, %s\n", 
+                            o.getOrderNumber(), o.getStatus(), o.getTotalAmount(), o.getCreatedDate()));
+                    }
+                    context.append("\n");
+                } else {
+                    context.append("RECENT ORDERS: No recent orders found.\n\n");
+                }
+            }
+            
+            // If asking for orders by status
+            if (lowerMessage.contains("shipped") || lowerMessage.contains("processing") || lowerMessage.contains("delivered")) {
+                String status = extractStatus(lowerMessage);
+                if (status != null) {
+                    List<Order> statusOrders = orderRepository.findByCustomerIdAndStatus(customerId, status.toUpperCase());
+                    if (!statusOrders.isEmpty()) {
+                        context.append(String.format("ORDERS WITH STATUS '%s':\n", status.toUpperCase()));
+                        for (Order o : statusOrders) {
+                            context.append(String.format("- Order %s: $%.2f, %s\n", 
+                                o.getOrderNumber(), o.getTotalAmount(), o.getCreatedDate()));
+                        }
+                        context.append("\n");
+                    } else {
+                        context.append(String.format("No orders found with status '%s'.\n\n", status.toUpperCase()));
+                    }
+                }
+            }
+            
+        } catch (Exception e) {
+            logger.error("Error retrieving order context: {}", e.getMessage(), e);
+            context.append("ERROR: Unable to retrieve order information at this time.\n\n");
+        }
+        
+        return context.toString();
+    }
+    
+    /**
+     * Extract order number from message
+     * @param message Customer message
+     * @return Order number if found, null otherwise
+     */
+    private String extractOrderNumber(String message) {
+        // Look for patterns like "ORD-001", "order ORD-001", "check ORD-001"
+        String[] words = message.split("\\s+");
+        for (String word : words) {
+            if (word.matches("ORD-\\d+")) {
+                return word;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Extract status from message
+     * @param message Customer message
+     * @return Status if found, null otherwise
+     */
+    private String extractStatus(String message) {
+        if (message.contains("shipped")) return "SHIPPED";
+        if (message.contains("processing")) return "PROCESSING";
+        if (message.contains("delivered")) return "DELIVERED";
+        if (message.contains("cancelled")) return "CANCELLED";
+        return null;
     }
 } 
