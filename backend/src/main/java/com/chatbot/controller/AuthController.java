@@ -21,7 +21,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:3000")
 @Tag(name = "Authentication", description = "APIs for customer authentication and session management")
 public class AuthController {
     

@@ -20,7 +20,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orders")
-@CrossOrigin(origins = "http://localhost:3000")
 @Tag(name = "Order Management", description = "APIs for retrieving order information and tracking")
 public class OrderController {
 

@@ -140,3 +140,27 @@ the @frontend/ application is getting 200 from @backend/ when doing log in but i
 still not working I could see the @backend/ response is well, then once it navigates navigate('/chat'); the login page is loaded again
 
 ##############
+#role
+you are an expert fullstack developer
+
+#objective
+consider the @user-stories.md file to work on story 2
+take the following considerations in@backend/ :
+- implement the chat endpoint and integrate with an LLM API
+- the endpoint accepts customer messages and returns AI-generated replies
+- ensure chatbot persona is polite and customer focused
+- handle errors and rate limits gracefully
+
+deliverable: working chat endpoint with authentication applied
+
+##############
+#role
+you are an expert fullstack developer
+
+#objective
+consider the @user-stories.md file to work on story 2
+take the following considerations in @frontend/ app:
+- connect the front end chat with the @backend/ endpoint previously created.
+- ensure the service is calling  the new endpoint and provide the require information
+
+##############

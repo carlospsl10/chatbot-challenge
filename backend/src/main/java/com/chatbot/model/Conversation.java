@@ -1,7 +1,6 @@
 package com.chatbot.model;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,38 +14,28 @@ public class Conversation {
     @Column(name = "customer_id", nullable = false)
     private Long customerId;
     
-    @Column(name = "session_id")
+    @Column(name = "session_id", nullable = false)
     private String sessionId;
     
     @Column(name = "message", columnDefinition = "TEXT", nullable = false)
     private String message;
     
-    @Column(name = "response", columnDefinition = "TEXT")
-    private String response;
+    @Column(name = "is_bot_message", nullable = false)
+    private Boolean isBotMessage = false;
     
-    @Column(name = "intent")
-    private String intent;
-    
-    @Column(name = "confidence", precision = 3, scale = 2)
-    private BigDecimal confidence;
-    
-    @Column(name = "timestamp", nullable = false)
-    private LocalDateTime timestamp;
+    @Column(name = "created_date", nullable = false)
+    private LocalDateTime createdDate;
     
     // Default constructor
     public Conversation() {}
     
-    // Constructor with all fields
-    public Conversation(Long id, Long customerId, String sessionId, String message,
-                      String response, String intent, BigDecimal confidence, LocalDateTime timestamp) {
-        this.id = id;
+    // Constructor with fields
+    public Conversation(Long customerId, String sessionId, String message, Boolean isBotMessage) {
         this.customerId = customerId;
         this.sessionId = sessionId;
         this.message = message;
-        this.response = response;
-        this.intent = intent;
-        this.confidence = confidence;
-        this.timestamp = timestamp;
+        this.isBotMessage = isBotMessage;
+        this.createdDate = LocalDateTime.now();
     }
     
     // Getters and Setters
@@ -62,20 +51,16 @@ public class Conversation {
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
     
-    public String getResponse() { return response; }
-    public void setResponse(String response) { this.response = response; }
+    public Boolean getIsBotMessage() { return isBotMessage; }
+    public void setIsBotMessage(Boolean isBotMessage) { this.isBotMessage = isBotMessage; }
     
-    public String getIntent() { return intent; }
-    public void setIntent(String intent) { this.intent = intent; }
-    
-    public BigDecimal getConfidence() { return confidence; }
-    public void setConfidence(BigDecimal confidence) { this.confidence = confidence; }
-    
-    public LocalDateTime getTimestamp() { return timestamp; }
-    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
+    public LocalDateTime getCreatedDate() { return createdDate; }
+    public void setCreatedDate(LocalDateTime createdDate) { this.createdDate = createdDate; }
     
     @PrePersist
     protected void onCreate() {
-        timestamp = LocalDateTime.now();
+        if (createdDate == null) {
+            createdDate = LocalDateTime.now();
+        }
     }
 } 

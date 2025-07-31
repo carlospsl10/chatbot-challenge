@@ -8,22 +8,28 @@ import {
   Container,
   List,
   ListItem,
-  ListItemText,
-  Divider
+  Alert,
+  CircularProgress
 } from '@mui/material';
 import { Send as SendIcon } from '@mui/icons-material';
+import chatService from '../../services/chatService';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface Message {
   id: string;
   text: string;
   sender: 'user' | 'bot';
   timestamp: Date;
+  intent?: string;
+  confidence?: number;
 }
 
 const Chat: React.FC = () => {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string>('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -39,12 +45,12 @@ const Chat: React.FC = () => {
     setMessages([
       {
         id: '1',
-        text: 'Hello! I\'m your AI assistant. How can I help you with your orders today?',
+        text: `Hello ${user?.firstName || 'there'}! I'm your AI assistant. How can I help you with your orders today?`,
         sender: 'bot',
         timestamp: new Date()
       }
     ]);
-  }, []);
+  }, [user]);
 
   const handleSendMessage = async () => {
     if (!inputText.trim()) return;
@@ -59,21 +65,34 @@ const Chat: React.FC = () => {
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
     setIsLoading(true);
+    setError('');
 
     try {
-      // TODO: Implement actual API call to backend
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      // Call backend chat API
+      const response = await chatService.sendMessage(inputText);
       
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: `I received your message: "${inputText}". This is a placeholder response.`,
+        text: response.message,
         sender: 'bot',
-        timestamp: new Date()
+        timestamp: new Date(response.timestamp),
+        intent: response.intent,
+        confidence: response.confidence
       };
 
       setMessages(prev => [...prev, botMessage]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending message:', error);
+      setError(error.message || 'Failed to send message. Please try again.');
+      
+      // Add error message to chat
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: 'Sorry, I encountered an error. Please try again.',
+        sender: 'bot',
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
@@ -98,6 +117,15 @@ const Chat: React.FC = () => {
             Ask me anything about your orders
           </Typography>
         </Box>
+
+        {/* Error Alert */}
+        {error && (
+          <Box sx={{ p: 2 }}>
+            <Alert severity="error" onClose={() => setError('')}>
+              {error}
+            </Alert>
+          </Box>
+        )}
 
         {/* Messages */}
         <Box sx={{ flex: 1, overflow: 'auto', p: 2 }}>
@@ -126,14 +154,20 @@ const Chat: React.FC = () => {
                   <Typography variant="caption" sx={{ opacity: 0.7, mt: 1, display: 'block' }}>
                     {message.timestamp.toLocaleTimeString()}
                   </Typography>
+                  {message.intent && (
+                    <Typography variant="caption" sx={{ opacity: 0.5, display: 'block' }}>
+                      Intent: {message.intent} (Confidence: {message.confidence?.toFixed(2)})
+                    </Typography>
+                  )}
                 </Paper>
               </ListItem>
             ))}
             {isLoading && (
               <ListItem sx={{ justifyContent: 'flex-start' }}>
-                <Paper elevation={1} sx={{ p: 2, backgroundColor: 'grey.100' }}>
+                <Paper elevation={1} sx={{ p: 2, backgroundColor: 'grey.100', display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <CircularProgress size={16} />
                   <Typography variant="body1">
-                    Typing...
+                    AI is thinking...
                   </Typography>
                 </Paper>
               </ListItem>
