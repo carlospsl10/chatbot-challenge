@@ -101,14 +101,14 @@
 
 **Acceptance Criteria:**
 - Customer can click logout button in interface
-- System invalidates JWT token on server side
-- System removes session data from Redis
+- System invalidates JWT token on server side (optional blacklist)
 - System clears stored token from browser
 - Customer is redirected to login page after logout
 - Customer cannot access protected endpoints after logout
 - System logs logout activity for security audit
 - System provides confirmation message for successful logout
 - System handles logout gracefully even if token is expired
+- Frontend clears all authentication state and user data
 
 **Mapped Endpoint:** `POST /api/auth/logout`
 

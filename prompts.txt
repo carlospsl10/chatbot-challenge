@@ -222,3 +222,22 @@ take in account the following considerations in @backend/
 - @frontend/ app should be able to see customer order history
 
 ############################################################################################################################
+
+##############
+make git add and git commit with some comments and git push to main branch
+
+##############
+############################################################################################################################
+
+#role  
+you are an expert fullstack developer
+
+#objective
+consider the @user-stories.md file to work on story 5
+
+take into account the following considerations 
+- modify the user story 5 and remove redis from it
+- remove redis service in docker compose and redis config in . if there are places where it ir redis and is not crucial to the code, remove it.
+- applies logout on both and apps.
+
+############################################################################################################################
