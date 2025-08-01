@@ -55,7 +55,7 @@ logging:
 
 # CORS Configuration
 cors:
-  allowed-origins: "http://localhost:3000"
+  allowed-origins: "http://localhost:3000,https://*.railway.internal,https://*.railway.app"
   allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
   allowed-headers: "*"
   allow-credentials: true
