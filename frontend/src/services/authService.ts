@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+import environment from '../config/environment';
 
 export interface LoginRequest {
   email: string;
@@ -36,8 +35,11 @@ class AuthService {
 
   // Set up axios defaults
   constructor() {
-    axios.defaults.baseURL = API_BASE_URL;
+    axios.defaults.baseURL = environment.getApiUrl();
     axios.defaults.headers.common['Content-Type'] = 'application/json';
+    
+    // Log configuration in debug mode
+    environment.logConfig();
   }
 
   /**

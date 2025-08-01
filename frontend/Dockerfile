@@ -1,5 +1,5 @@
 # Multi-stage build for React application
-FROM node:16-alpine AS build
+FROM node:18-alpine AS build
 
 # Set working directory
 WORKDIR /app
@@ -13,17 +13,21 @@ RUN npm ci --only=production
 # Copy source code
 COPY . .
 
-# Build the application
+# Build the app with environment-specific settings
+ARG REACT_APP_ENV=production
+ENV REACT_APP_ENV=$REACT_APP_ENV
+
 RUN npm run build
 
 # Production stage
 FROM nginx:alpine
 
-# Copy custom nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
-
 # Copy built application from build stage
 COPY --from=build /app/build /usr/share/nginx/html
+
+# Copy appropriate nginx config based on environment
+ARG REACT_APP_ENV=production
+COPY nginx.${REACT_APP_ENV}.conf /etc/nginx/nginx.conf
 
 # Expose port
 EXPOSE 80

@@ -17,6 +17,15 @@ env:
   BACKEND_IMAGE_NAME: chatbot-backend
   FRONTEND_IMAGE_NAME: chatbot-frontend
   IMAGE_TAG: ${{ github.sha }}
+  # Frontend environment variables for CI
+  REACT_APP_API_URL: https://chatbot-challenge.railway.internal
+  REACT_APP_ENV: production
+  REACT_APP_USE_PROXY: false
+  REACT_APP_DEBUG: false
+  REACT_APP_LOG_LEVEL: error
+  REACT_APP_ENABLE_HOT_RELOAD: false
+  REACT_APP_BACKEND_URL: https://chatbot-challenge.railway.internal
+  REACT_APP_NGINX_CONFIG: prod
 
 jobs:
   setup:
@@ -117,15 +126,30 @@ jobs:
           cd frontend
           npm ci
 
-      - name: Build Frontend
+      - name: Build Frontend (Development)
         run: |
           cd frontend
-          npm run build
+          npm run build:dev
+
+      - name: Build Frontend (Production)
+        run: |
+          cd frontend
+          npm run build:prod
 
       - name: Run Frontend Tests
         run: |
           cd frontend
           npm test -- --watchAll=false --coverage --passWithNoTests
+
+      - name: Test Environment Configuration
+        run: |
+          cd frontend
+          echo "🧪 Testing environment configuration..."
+          echo "Testing development build..."
+          npm run build:dev
+          echo "Testing production build..."
+          npm run build:prod
+          echo "✅ Environment configuration tests passed!"
 
   docker-build:
     name: Build Docker Images
@@ -156,12 +180,28 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Build and push Frontend image
+      - name: Build and push Frontend image (Development)
         uses: docker/build-push-action@v5
         with:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
+          build-args: |
+            REACT_APP_ENV=development
+          tags: |
+            ${{ env.DOCKER_HUB_USERNAME }}/${{ env.FRONTEND_IMAGE_NAME }}:dev-${{ env.IMAGE_TAG }}
+            ${{ env.DOCKER_HUB_USERNAME }}/${{ env.FRONTEND_IMAGE_NAME }}:dev
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Frontend image (Production)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          build-args: |
+            REACT_APP_ENV=production
           tags: |
             ${{ env.DOCKER_HUB_USERNAME }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ env.IMAGE_TAG }}
             ${{ env.DOCKER_HUB_USERNAME }}/${{ env.FRONTEND_IMAGE_NAME }}:latest
@@ -219,7 +259,10 @@ jobs:
           echo "🚀 Docker images pushed to Docker Hub"
           echo "🔒 Security scan completed"
           echo "📦 Backend image: ${{ env.DOCKER_HUB_USERNAME }}/${{ env.BACKEND_IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
-          echo "📦 Frontend image: ${{ env.DOCKER_HUB_USERNAME }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
+          echo "📦 Frontend images:"
+          echo "   - Development: ${{ env.DOCKER_HUB_USERNAME }}/${{ env.FRONTEND_IMAGE_NAME }}:dev-${{ env.IMAGE_TAG }}"
+          echo "   - Production: ${{ env.DOCKER_HUB_USERNAME }}/${{ env.FRONTEND_IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
+          echo "🌍 Environment configurations tested for both dev and prod"
 
       - name: Notify on failure
         if: failure()

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import authService from './authService';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080';
+import environment from '../config/environment';
 
 export interface Order {
   id: number;
@@ -27,7 +26,7 @@ export interface OrderError {
 
 class OrderService {
   constructor() {
-    axios.defaults.baseURL = API_BASE_URL;
+    axios.defaults.baseURL = environment.getApiUrl();
     axios.defaults.headers.common['Content-Type'] = 'application/json';
   }
 
