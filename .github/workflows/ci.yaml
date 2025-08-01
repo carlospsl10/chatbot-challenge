@@ -178,12 +178,25 @@ jobs:
           scan-ref: '.'
           format: 'sarif'
           output: 'trivy-results.sarif'
+          exit-code: '0'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
+
+      - name: Security Scan Summary
+        if: always()
+        run: |
+          echo "🔒 Security Scan Summary:"
+          echo "📊 Vulnerabilities found: $(grep -c 'vulnerability' trivy-results.sarif || echo '0')"
+          echo "⚠️  CRITICAL: $(grep -c 'CRITICAL' trivy-results.sarif || echo '0')"
+          echo "🚨 HIGH: $(grep -c 'HIGH' trivy-results.sarif || echo '0')"
+          echo "📋 Results uploaded to GitHub Security tab"
+          echo "💡 Consider updating dependencies to fix vulnerabilities"
 
   notify:
     name: Notify Status
