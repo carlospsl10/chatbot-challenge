@@ -278,3 +278,48 @@ take into account the following considerations:
 - in @frontend/ feel free to create a proper form for customer creation and connect it to the @backend/ app. Take into account the specified validations written in the acceptance criteria.
 
 ############################################################################################################################
+
+##############
+make git add and git commit with some comments and git push to main branch
+
+##############
+############################################################################################################################
+
+#role  
+you are an expert fullstack developer
+
+#objective 
+add unit and integration tests for all the main flows written so far.
+
+take into account the following considerations:
+- make draft tests that mock the LLM, auth flows, and retrieval logic.
+- cover positive and negative cases (i.e. invalid login, missing auth header, unknown product query or order)
+- in @frontend/ app the test suite would run via 'npm test'
+- in @backend/ app using mvn test
+
+############################################################################################################################
+
+##############
+in @backend/ test classes, I see compiling issues in ChatServiceTest and ChatControllerTest classes
+
+##############
+I see this compile issue in ChatServiceTest validKnowledgeBase.setTags(Arrays.asList("order", "status", "processing")); 
+
+running tests on@backend/ git these errors
+```
+all controller tests in @backend/ are failing
+```
+
+in @backend/ you decided to remove some required test classes.  Start considering the unit test cases and integration tests for all controllers
+```
+remove testGetOrderTrackingSuccess as @backend/ does not support tracking so far
+```
+
+in @backend/ remove the SimpleTest
+```
+now do the same verification over @frontend/ app since the tests are failing
+```
+
+I still see test issues in @frontend/
+```
+test errors in @frontend/ remains. so, consider the basic tests, remove others
