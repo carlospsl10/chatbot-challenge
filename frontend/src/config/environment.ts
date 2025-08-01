@@ -83,7 +83,7 @@ class EnvironmentConfiguration {
    * Resolve log level
    */
   private resolveLogLevel(): string {
-    return process.env.REACT_APP_LOG_LEVEL || (this.isDevelopment() ? 'debug' : 'error');
+    return process.env.REACT_APP_LOG_LEVEL || (this.resolveEnvironment() === "development" ? 'debug' : 'error');
   }
 
   /**
@@ -93,7 +93,7 @@ class EnvironmentConfiguration {
     if (process.env.REACT_APP_ENABLE_HOT_RELOAD) {
       return process.env.REACT_APP_ENABLE_HOT_RELOAD === 'true';
     }
-    return this.isDevelopment();
+    return this.resolveEnvironment() === "development";
   }
 
   /**
@@ -107,7 +107,7 @@ class EnvironmentConfiguration {
    * Resolve nginx config type
    */
   private resolveNginxConfig(): string {
-    return process.env.REACT_APP_NGINX_CONFIG || (this.isDevelopment() ? 'dev' : 'prod');
+    return process.env.REACT_APP_NGINX_CONFIG || (this.resolveEnvironment() === "development" ? 'dev' : 'prod');
   }
 
   /**
