@@ -25,9 +25,18 @@ FROM nginx:alpine
 # Copy built application from build stage
 COPY --from=build /app/build /usr/share/nginx/html
 
+# Copy nginx config files
+COPY nginx.dev.conf /tmp/nginx.dev.conf
+COPY nginx.prod.conf /tmp/nginx.prod.conf
+
 # Copy appropriate nginx config based on environment
 ARG REACT_APP_ENV=production
-COPY nginx.${REACT_APP_ENV}.conf /etc/nginx/nginx.conf
+# Map environment to nginx config file names
+RUN if [ "$REACT_APP_ENV" = "development" ]; then \
+        cp /tmp/nginx.dev.conf /etc/nginx/nginx.conf; \
+    else \
+        cp /tmp/nginx.prod.conf /etc/nginx/nginx.conf; \
+    fi
 
 # Expose port
 EXPOSE 80
