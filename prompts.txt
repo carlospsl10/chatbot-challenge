@@ -323,3 +323,6 @@ now do the same verification over @frontend/ app since the tests are failing
 I still see test issues in @frontend/
 ```
 test errors in @frontend/ remains. so, consider the basic tests, remove others
+```
+
+make git add and git commit with some comments and git push to main branch
