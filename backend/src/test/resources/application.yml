@@ -1,0 +1,79 @@
+server:
+  port: 0  # Use random port for tests
+
+spring:
+  profiles:
+    active: test
+  application:
+    name: order-status-chatbot-test
+  
+  # Test Database Configuration - H2 In-Memory
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # Create schema and drop after tests
+    show-sql: false  # Disable SQL logging in tests
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: false
+        hbm2ddl:
+          auto: create-drop
+  
+  security:
+    user:
+      name: admin
+      password: admin
+
+# JWT Configuration for Testing
+jwt:
+  secret: test-secret-key-for-testing-only-not-for-production
+  expiration: 86400000 # 24 hours in milliseconds
+
+# OpenAI Configuration for Testing
+openai:
+  api-key: test-api-key
+  model: gpt-3.5-turbo
+  max-tokens: 150
+  temperature: 0.7
+
+# Rate Limiting Configuration for Testing
+rate-limit:
+  chat:
+    requests-per-minute: 100  # Higher limit for testing
+  openai:
+    requests-per-minute: 100  # Higher limit for testing
+
+# Logging Configuration for Testing
+logging:
+  level:
+    com.chatbot: INFO
+    org.springframework.security: WARN
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# CORS Configuration for Testing
+cors:
+  allowed-origins: "http://localhost:3000"
+  allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+  allowed-headers: "*"
+  allow-credentials: true
+
+# SpringDoc OpenAPI Configuration for Testing
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+  packages-to-scan: com.chatbot.controller
+  paths-to-match: /api/** 

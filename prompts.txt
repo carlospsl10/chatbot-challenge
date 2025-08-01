@@ -326,3 +326,26 @@ test errors in @frontend/ remains. so, consider the basic tests, remove others
 ```
 
 make git add and git commit with some comments and git push to main branch
+
+##############
+create a folder in the root named documentation and store all md files except for README.md and @user-stories.md
+
+############################################################################################################################
+#role  
+you are an expert devops engineer
+
+#objective 
+use github actions to automate the build, test and deploy of the applications
+
+take into account the following considerations:
+- the github workflow action will be named ci.yaml
+- execute the workflow actions everytime there is a merge into main branch
+- use carloselpapa10 as the docker hub username and  DOCKER_HUB_TOKEN as the secret token
+
+##############
+the readme file into gitgub workflows directory is empty
+
+##############
+github actions ci/cd is having issues:
+in @backend/ use an inmemory database (i.e. h2 database) to run the test suite. be sure the changes reside only on test side.
+test using maven to check everything is correct
