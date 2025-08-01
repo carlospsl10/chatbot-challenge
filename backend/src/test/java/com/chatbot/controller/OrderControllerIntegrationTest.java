@@ -168,4 +168,25 @@ class OrderControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    void testGetOrderByNumberWithoutToken() throws Exception {
+        mockMvc.perform(get("/api/orders/TEST-001")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetMyOrdersWithoutToken() throws Exception {
+        mockMvc.perform(get("/api/orders/my-orders")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testGetOrderTrackingWithoutToken() throws Exception {
+        mockMvc.perform(get("/api/orders/track/TEST-001")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
 } 

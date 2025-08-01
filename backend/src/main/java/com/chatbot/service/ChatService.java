@@ -316,16 +316,22 @@ public class ChatService {
                 Optional<Order> order = orderRepository.findByOrderNumber(orderNumber);
                 if (order.isPresent()) {
                     Order o = order.get();
-                    context.append("SPECIFIC ORDER INFORMATION:\n");
-                    context.append(String.format("- Order Number: %s\n", o.getOrderNumber()));
-                    context.append(String.format("- Status: %s\n", o.getStatus()));
-                    context.append(String.format("- Total Amount: $%.2f\n", o.getTotalAmount()));
-                    context.append(String.format("- Shipping Address: %s\n", o.getShippingAddress()));
-                    context.append(String.format("- Created Date: %s\n", o.getCreatedDate()));
-                    if (o.getUpdatedDate() != null) {
-                        context.append(String.format("- Last Updated: %s\n", o.getUpdatedDate()));
+                    
+                    // Security check: ensure order belongs to authenticated customer
+                    if (!o.getCustomerId().equals(customerId)) {
+                        context.append("ACCESS DENIED: I'm sorry, but I can only provide information about your own orders. The order number '").append(orderNumber).append("' does not belong to your account.\n\n");
+                    } else {
+                        context.append("SPECIFIC ORDER INFORMATION:\n");
+                        context.append(String.format("- Order Number: %s\n", o.getOrderNumber()));
+                        context.append(String.format("- Status: %s\n", o.getStatus()));
+                        context.append(String.format("- Total Amount: $%.2f\n", o.getTotalAmount()));
+                        context.append(String.format("- Shipping Address: %s\n", o.getShippingAddress()));
+                        context.append(String.format("- Created Date: %s\n", o.getCreatedDate()));
+                        if (o.getUpdatedDate() != null) {
+                            context.append(String.format("- Last Updated: %s\n", o.getUpdatedDate()));
+                        }
+                        context.append("\n");
                     }
-                    context.append("\n");
                 } else {
                     context.append("ORDER NOT FOUND: The order number '").append(orderNumber).append("' was not found in our system.\n\n");
                 }
