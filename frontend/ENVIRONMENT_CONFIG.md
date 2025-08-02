@@ -18,13 +18,13 @@ REACT_APP_NGINX_CONFIG=dev
 
 ### Production Environment (`.env.production`)
 ```bash
-REACT_APP_API_URL=https://chatbot-challenge.railway.internal
+REACT_APP_API_URL=https://chatbot-challenge-production-03c8.up.railway.app
 REACT_APP_ENV=production
 REACT_APP_USE_PROXY=false
 REACT_APP_DEBUG=false
 REACT_APP_LOG_LEVEL=error
 REACT_APP_ENABLE_HOT_RELOAD=false
-REACT_APP_BACKEND_URL=https://chatbot-challenge.railway.internal
+REACT_APP_BACKEND_URL=https://chatbot-challenge-production-03c8.up.railway.app
 REACT_APP_NGINX_CONFIG=prod
 ```
 
@@ -37,7 +37,7 @@ REACT_APP_NGINX_CONFIG=prod
 - Development mode headers
 
 ### Production (`nginx.prod.conf`)
-- Proxies API requests to `https://chatbot-challenge.railway.internal`
+- Proxies API requests to `https://chatbot-challenge-production-03c8.up.railway.app`
 - Aggressive caching for static assets
 - Strict security headers
 - Production mode headers
@@ -106,13 +106,13 @@ docker build --build-arg REACT_APP_ENV=production -t chatbot-frontend:prod .
 
 | Variable | Description | Development | Production |
 |----------|-------------|-------------|------------|
-| `REACT_APP_API_URL` | Backend API URL | `http://localhost:8080` | `https://chatbot-challenge.railway.internal` |
+| `REACT_APP_API_URL` | Backend API URL | `http://localhost:8080` | `https://chatbot-challenge-production-03c8.up.railway.app` |
 | `REACT_APP_ENV` | Environment name | `development` | `production` |
 | `REACT_APP_USE_PROXY` | Use nginx proxy | `true` | `false` |
 | `REACT_APP_DEBUG` | Enable debug mode | `true` | `false` |
 | `REACT_APP_LOG_LEVEL` | Logging level | `debug` | `error` |
 | `REACT_APP_ENABLE_HOT_RELOAD` | Enable hot reload | `true` | `false` |
-| `REACT_APP_BACKEND_URL` | Backend service URL | `http://backend:8080` | `https://chatbot-challenge.railway.internal` |
+| `REACT_APP_BACKEND_URL` | Backend service URL | `http://backend:8080` | `https://chatbot-challenge-production-03c8.up.railway.app` |
 | `REACT_APP_NGINX_CONFIG` | Nginx config type | `dev` | `prod` |
 
 ## Deployment

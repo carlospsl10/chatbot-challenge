@@ -46,7 +46,7 @@ class EnvironmentConfiguration {
       case 'development':
         return 'http://localhost:8080';
       case 'production':
-        return 'https://chatbot-challenge.railway.internal';
+        return 'https://chatbot-challenge-production-03c8.up.railway.app';
       default:
         return 'http://localhost:8080';
     }
